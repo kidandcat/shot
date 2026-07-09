@@ -50,7 +50,7 @@ Defaults are tuned to look right without any flags: `shot in.png` gives you the
 | `--shadow-offset` | `1.1%` | vertical |
 | `--shadow-color` | `#0A0C14` | |
 | `--rays` | | soft window-blind light rays (postspark's "Shadow Overlay") |
-| `--rays-strength` | `0.10` | |
+| `--rays-strength` | `0.04` | |
 | `--rays-angle` | `35` | |
 | `--rays-under` | | confine the rays to the backdrop, sparing the window |
 | `--chrome` | `none` | `mac`, `mac-dark`, `browser`, `browser-dark`, `auto` |
