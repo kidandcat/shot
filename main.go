@@ -38,6 +38,12 @@ type options struct {
 	ratio         string
 	scale         float64
 	captureMode   string
+	width         int
+	height        int
+	dsf           float64
+	fullPage      bool
+	waitMs        int
+	dark          bool
 	out           string
 	quality       int
 	copyClip      bool
@@ -58,7 +64,8 @@ func usage() {
 
 usage:
   shot [flags] <input.png|->      process an existing image ("-" reads stdin)
-  shot --capture window [flags]   capture, then process
+  shot [flags] <https://url>      render a page headless, then process
+  shot --capture window [flags]   capture a window, then process
 
 flags:
   -o, --out PATH       output file (default: <input>-shot.png, or ~/Desktop for captures)
@@ -80,7 +87,13 @@ flags:
       --url TEXT       address bar text (browser chrome)
       --ratio W:H      pad the canvas out to an aspect ratio, e.g. 16:9
       --scale F        scale the input before compositing
-      --capture MODE   window | region | screen
+      --capture MODE   window | region | screen | rect:X,Y,W,H
+      --width N        page viewport width (default: 1440)
+      --height N       page viewport height (default: 900)
+      --dsf F          device pixel ratio for page renders (default: 2)
+      --full-page      capture the whole page, not just the viewport
+      --wait MS        settle time before the page render (default: 1200)
+      --dark           render the page with prefers-color-scheme: dark
       --copy           also copy the result to the clipboard
       --open           open the result when done
       --list-bg        list background presets
@@ -90,6 +103,7 @@ examples:
   shot ugly.png --copy
   shot --capture window --bg midnight --chrome mac-dark --title "Marketplace" --copy
   shot in.png --bg "#0f2027,#2c5364" --ratio 16:9 -o out.png
+  shot https://fecha.app --full-page --copy
 `)
 }
 
@@ -123,6 +137,12 @@ func run() error {
 	str(&o.ratio, "", "ratio")
 	fs.Float64Var(&o.scale, "scale", 1, "")
 	str(&o.captureMode, "", "capture")
+	fs.IntVar(&o.width, "width", 1440, "")
+	fs.IntVar(&o.height, "height", 900, "")
+	fs.Float64Var(&o.dsf, "dsf", 2, "")
+	fs.BoolVar(&o.fullPage, "full-page", false, "")
+	fs.IntVar(&o.waitMs, "wait", 1200, "")
+	fs.BoolVar(&o.dark, "dark", false, "")
 	str(&o.out, "", "out", "o")
 	fs.IntVar(&o.quality, "quality", 92, "")
 	fs.BoolVar(&o.copyClip, "copy", false, "")
@@ -143,10 +163,15 @@ func run() error {
 		return nil
 	}
 
-	angleSet := false
+	angleSet, chromeSet, urlSet := false, false, false
 	fs.Visit(func(f *flag.Flag) {
-		if f.Name == "bg-angle" {
+		switch f.Name {
+		case "bg-angle":
 			angleSet = true
+		case "chrome":
+			chromeSet = true
+		case "url":
+			urlSet = true
 		}
 	})
 
@@ -160,9 +185,30 @@ func run() error {
 		}
 		tempCapture, input = p, p
 		defer os.Remove(tempCapture)
+	case isURL(input):
+		// A page rendered headless has no browser UI, so give it the drawn one.
+		if !chromeSet {
+			o.chrome = "browser"
+		}
+		if !urlSet {
+			o.url = displayURL(input)
+		}
+		pageURL := input
+		p, err := captureURL(pageURL, webOptions{
+			width: o.width, height: o.height, scale: o.dsf,
+			fullPage: o.fullPage, wait: time.Duration(o.waitMs) * time.Millisecond, dark: o.dark,
+		})
+		if err != nil {
+			return err
+		}
+		tempCapture, input = p, p
+		defer os.Remove(tempCapture)
+		if o.out == "" {
+			o.out = urlOutput(pageURL)
+		}
 	case input == "":
 		usage()
-		return fmt.Errorf("no input (pass a file, \"-\", or --capture)")
+		return fmt.Errorf("no input (pass a file, a URL, \"-\", or --capture)")
 	}
 
 	src, err := loadImage(input)

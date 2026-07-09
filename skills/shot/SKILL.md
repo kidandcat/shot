@@ -1,11 +1,11 @@
 ---
 name: shot
-description: Turn a plain screenshot into a presentable image — mesh-gradient backdrop, soft light rays, rounded corners, drop shadow, optional macOS/browser window frame. Use whenever the user asks to make a screenshot look good, "beautify"/"prettify" a screenshot, prepare one for a product update, a blog post, a slide, Slack or social media, or asks for a postspark / pika.style / screely / CleanShot-style image. Also use to capture a window or region and frame it in one step.
+description: Turn a plain screenshot — or a live website — into a presentable image: mesh-gradient backdrop, soft light rays, rounded corners, drop shadow, optional macOS/browser window frame. Use whenever the user asks to make a screenshot look good, "beautify"/"prettify" a screenshot, screenshot a website or landing page, prepare an image for a product update, a blog post, a slide, Slack or social media, or asks for a postspark / pika.style / screely / CleanShot-style image. Also use to capture a window or region and frame it in one step.
 ---
 
 # shot
 
-`shot` is a local CLI that does what the screenshot-beautifier web apps do, without a browser. Give it a PNG, get back a framed image.
+`shot` is a local CLI that does what the screenshot-beautifier web apps do, without one. Give it a PNG or a URL, get back a framed image.
 
 Check it is installed with `shot --version`. If it is missing, build it from the repo (`go build -o shot . && cp shot ~/.local/bin/`).
 
@@ -16,9 +16,25 @@ The defaults are already tuned. Do not add flags unless the user asks for someth
 ```sh
 shot screenshot.png                 # writes screenshot-shot.png
 shot screenshot.png --copy --open   # also to the clipboard, and open it
+shot https://fecha.app --copy       # renders the page headless, writes fecha-app-shot.png
 ```
 
 That gives a `sunrise` mesh gradient, soft diagonal light rays, 7% padding, a 12px radius and a soft drop shadow.
+
+## Websites
+
+Pass a URL and `shot` renders it in a headless Chrome over CDP. **No part of the real browser's UI reaches the image** — no tabs, no bookmarks, no extensions. The address bar you see in the output is drawn by `shot`, so it looks the same on every machine. This is the right way to screenshot a page; do not drive the user's visible browser and capture the screen.
+
+```sh
+shot https://fecha.app                        # viewport render, drawn browser frame
+shot https://fecha.app --full-page            # the whole page, however long
+shot https://fecha.app --dark                 # prefers-color-scheme: dark
+shot https://fecha.app --width 390 --height 844   # a phone viewport
+shot https://fecha.app --chrome none          # bare page, no drawn frame
+shot https://fecha.app --wait 3000            # let a heavy page settle longer
+```
+
+`--chrome browser` and `--url <the url>` are implied for URLs; override them if you want a different address bar text, or `--chrome none` for no frame. `--dsf 2` (default) renders at retina density. Needs Chrome or Chromium installed; a bad URL fails with the network error, it does not produce a blank image.
 
 ## Flags worth knowing
 
@@ -39,7 +55,7 @@ Backgrounds come in two families: **mesh** (`nebula`, `sunrise`, `lagoon`, `iris
 
 ## Choosing a look
 
-- **Do not add `--chrome` to a screenshot that already shows a window.** A capture of a Slack or browser window already has its own title bar, and you would end up with two.
+- **Do not add `--chrome` to a screenshot that already shows a window.** A capture of a Slack or browser window already has its own title bar, and you would end up with two. (URLs are the exception: a headless render has no frame, so `shot` adds one for you.)
 - Rays are subtle on saturated backdrops and obvious on pale ones. If the user says the effect is invisible, raise `--rays-strength`; if it looks busy, lower it.
 - `--chrome auto` picks a light or dark title bar based on how dark the backdrop is.
 

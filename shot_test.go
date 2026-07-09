@@ -167,6 +167,37 @@ func TestComposeRejectsBadInput(t *testing.T) {
 	}
 }
 
+func TestURLHelpers(t *testing.T) {
+	for _, s := range []string{"https://a.com", "http://a.com"} {
+		if !isURL(s) {
+			t.Errorf("isURL(%q) = false", s)
+		}
+	}
+	for _, s := range []string{"a.png", "-", "", "ftp://a.com", "httpsa.com"} {
+		if isURL(s) {
+			t.Errorf("isURL(%q) = true", s)
+		}
+	}
+
+	if got := displayURL("https://fecha.app/"); got != "fecha.app" {
+		t.Errorf("displayURL = %q", got)
+	}
+	if got := displayURL("http://a.com/x?y=1"); got != "a.com/x?y=1" {
+		t.Errorf("displayURL = %q", got)
+	}
+
+	cases := map[string]string{
+		"https://fecha.app/precios": "fecha-app-shot.png",
+		"https://www.example.com":   "example-com-shot.png",
+		"http://a.b.c/x?y=1#z":      "a-b-c-shot.png",
+	}
+	for in, want := range cases {
+		if got := urlOutput(in); got != want {
+			t.Errorf("urlOutput(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
 func TestPresetsAreValid(t *testing.T) {
 	for _, p := range presets {
 		if len(p.stops) < 2 {

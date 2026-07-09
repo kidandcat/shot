@@ -25,6 +25,10 @@ go install github.com/kidandcat/shot@latest
 ## Usage
 
 ```sh
+# Screenshot a website headless — no real browser UI in the image
+shot https://fecha.app --copy
+shot https://fecha.app --full-page --dark -o out.png
+
 # Beautify an existing screenshot
 shot ugly.png --bg sunset --chrome mac
 
@@ -69,6 +73,11 @@ a soft shadow.
 | `--ratio` | | e.g. `16:9` — pads the canvas out, never crops |
 | `--scale` | `1` | scale the input before compositing |
 | `--capture` | | `window`, `region`, `screen`, or `rect:X,Y,W,H` (non-interactive) |
+| `--width` / `--height` | `1440` / `900` | page viewport for URL renders |
+| `--dsf` | `2` | device pixel ratio for URL renders |
+| `--full-page` | | capture the whole page, not just the viewport |
+| `--wait` | `1200` | ms to let the page settle before rendering |
+| `--dark` | | render the page with `prefers-color-scheme: dark` |
 | `--copy` | | also copy the result to the clipboard |
 | `--open` | | open the result when done |
 | `--list-bg` | | list background presets |
@@ -83,6 +92,17 @@ Linear gradient presets: `aurora`, `candy`, `dawn`, `flare`, `forest`, `grape`, 
 
 `--chrome auto` picks the light or dark title bar based on how dark the
 background is.
+
+## Websites
+
+Passing a URL renders it in a headless Chrome over CDP (via `chromedp`) and
+frames the result. Nothing of the real browser's UI is in the image — the
+address bar you see is drawn by `shot`, so it stays clean whatever your Chrome
+looks like. `--chrome browser` and `--url <the url>` are implied; override
+either, or pass `--chrome none` for a bare page.
+
+Requires Google Chrome or Chromium on the machine. Output defaults to
+`<host>-shot.png`.
 
 ## Notes
 
