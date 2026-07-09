@@ -70,7 +70,7 @@ flags:
       --shadow-offset V
       --shadow-color   #hex
       --rays           cast soft window-blind light rays across the image
-      --rays-strength F  default 0.18
+      --rays-strength F  default 0.10
       --rays-angle DEG   default 35
       --rays-under     confine the rays to the backdrop, sparing the window
       --chrome KIND    none | mac | mac-dark | browser | browser-dark (default: none)
@@ -111,7 +111,7 @@ func run() error {
 	str(&o.shadowOffset, "1.1%", "shadow-offset")
 	str(&o.shadowColor, "#0A0C14", "shadow-color")
 	fs.BoolVar(&o.rays, "rays", false, "")
-	fs.Float64Var(&o.raysStrength, "rays-strength", 0.18, "")
+	fs.Float64Var(&o.raysStrength, "rays-strength", 0.10, "")
 	fs.Float64Var(&o.raysAngle, "rays-angle", 35, "")
 	fs.BoolVar(&o.raysUnder, "rays-under", false, "")
 	str(&o.chrome, "none", "chrome")
