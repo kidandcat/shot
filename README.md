@@ -8,7 +8,15 @@ window frame. A local CLI replacement for the web screenshot beautifiers
 Single static binary, no runtime dependencies — the only system tools it shells
 out to are `screencapture` (for `--capture`) and `osascript` (for `--copy`).
 
+**[kidandcat.github.io/shot](https://kidandcat.github.io/shot/)**
+
 ## Install
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/kidandcat/shot/main/install.sh | sh
+```
+
+Or from a checkout:
 
 ```sh
 git clone https://github.com/kidandcat/shot && cd shot && ./install.sh
