@@ -10,9 +10,9 @@ import (
 // out as they travel away from the light source.
 
 type raysOptions struct {
-	strength float64 // 0 = off; ~0.35 reads like postspark's 10% overlay
+	strength float64 // 0 = off
 	angle    float64 // degrees; direction the bands travel
-	overlay  bool    // also cast the rays over the window, not just the backdrop
+	width    float64 // stretches the band pattern; >1 = fewer, wider bands
 }
 
 // stripe is one band of light: centre and width along the projected axis (both
@@ -52,6 +52,9 @@ func bandValue(u float64) float64 {
 func applyRays(canvas *image.RGBA, o raysOptions, skip *image.Alpha, skipAt image.Point) {
 	if o.strength <= 0 {
 		return
+	}
+	if o.width <= 0 {
+		o.width = 1
 	}
 	b := canvas.Bounds()
 	w, h := float64(b.Dx()), float64(b.Dy())
@@ -101,8 +104,11 @@ func applyRays(canvas *image.RGBA, o raysOptions, skip *image.Alpha, skipAt imag
 				}
 			}
 			fx, fy := float64(x-b.Min.X), float64(y-b.Min.Y)
-			u := (fx*nx + fy*ny - lo) / span
-			v := lut[int(math.Min(1, math.Max(0, u))*(lutN-1))]
+			// Dividing by width shows less of the pattern across the same sweep,
+			// so each band comes out proportionally wider.
+			u := (fx*nx + fy*ny - lo) / span / o.width
+			u -= math.Floor(u) // the pattern tiles, so wide settings never run dry
+			v := lut[int(u*(lutN-1))]
 
 			// Ease out towards the far corner, but never all the way to nothing.
 			t := 1 - math.Hypot(fx-srcX, fy-srcY)/maxDist

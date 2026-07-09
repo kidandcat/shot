@@ -27,9 +27,10 @@ type options struct {
 	shadowOpacity float64
 	shadowOffset  string
 	shadowColor   string
-	rays          bool
+	noRays        bool
 	raysStrength  float64
 	raysAngle     float64
+	raysWidth     float64
 	raysUnder     bool
 	chrome        string
 	title         string
@@ -61,7 +62,7 @@ usage:
 
 flags:
   -o, --out PATH       output file (default: <input>-shot.png, or ~/Desktop for captures)
-      --bg SPEC        preset name, #hex[,#hex...] gradient, or an image path (default: slate)
+      --bg SPEC        preset name, #hex[,#hex...] gradient, or an image path (default: sunrise)
       --bg-angle DEG   gradient angle, 0 = left→right, 90 = top→bottom
       --pad V          padding around the window, px or % of the long side (default: 7%)
       --radius V       window corner radius, px or % (default: 12px, scaled for retina)
@@ -69,9 +70,10 @@ flags:
       --shadow-opacity F
       --shadow-offset V
       --shadow-color   #hex
-      --rays           cast soft window-blind light rays across the image
+      --no-rays        disable the window-blind light rays (on by default)
       --rays-strength F  default 0.04
       --rays-angle DEG   default 35
+      --rays-width F     >1 = fewer, wider bands (default: 2.5)
       --rays-under     confine the rays to the backdrop, sparing the window
       --chrome KIND    none | mac | mac-dark | browser | browser-dark (default: none)
       --title TEXT     title bar text (mac chrome)
@@ -85,7 +87,7 @@ flags:
       --version
 
 examples:
-  shot ugly.png --bg sunset --chrome mac --copy
+  shot ugly.png --copy
   shot --capture window --bg midnight --chrome mac-dark --title "Marketplace" --copy
   shot in.png --bg "#0f2027,#2c5364" --ratio 16:9 -o out.png
 `)
@@ -102,7 +104,7 @@ func run() error {
 			fs.StringVar(p, n, val, "")
 		}
 	}
-	str(&o.bg, "slate", "bg")
+	str(&o.bg, "sunrise", "bg")
 	fs.Float64Var(&o.bgAngle, "bg-angle", 135, "")
 	str(&o.pad, "7%", "pad", "padding")
 	str(&o.radius, "", "radius")
@@ -110,9 +112,10 @@ func run() error {
 	fs.Float64Var(&o.shadowOpacity, "shadow-opacity", 0.32, "")
 	str(&o.shadowOffset, "1.1%", "shadow-offset")
 	str(&o.shadowColor, "#0A0C14", "shadow-color")
-	fs.BoolVar(&o.rays, "rays", false, "")
+	fs.BoolVar(&o.noRays, "no-rays", false, "")
 	fs.Float64Var(&o.raysStrength, "rays-strength", 0.04, "")
 	fs.Float64Var(&o.raysAngle, "rays-angle", 35, "")
+	fs.Float64Var(&o.raysWidth, "rays-width", 2.5, "")
 	fs.BoolVar(&o.raysUnder, "rays-under", false, "")
 	str(&o.chrome, "none", "chrome")
 	str(&o.title, "", "title")
@@ -269,9 +272,9 @@ func compose(src image.Image, o options, angleSet bool) (image.Image, error) {
 
 	// Underlay rays light the backdrop only; the window is composited on top of
 	// them, so there is no point shading the pixels it will cover.
-	if o.rays && o.raysUnder {
+	if !o.noRays && o.raysUnder {
 		mask := roundedMask(wb.Dx(), wb.Dy(), radius)
-		applyRays(canvas, raysOptions{strength: o.raysStrength, angle: o.raysAngle}, mask, origin)
+		applyRays(canvas, o.raysOpts(), mask, origin)
 	}
 
 	if sigma > 0 && o.shadowOpacity > 0 {
@@ -281,10 +284,14 @@ func compose(src image.Image, o options, angleSet bool) (image.Image, error) {
 	}
 	draw.Draw(canvas, rounded.Bounds().Add(origin), rounded, rounded.Bounds().Min, draw.Over)
 
-	if o.rays && !o.raysUnder {
-		applyRays(canvas, raysOptions{strength: o.raysStrength, angle: o.raysAngle}, nil, image.Point{})
+	if !o.noRays && !o.raysUnder {
+		applyRays(canvas, o.raysOpts(), nil, image.Point{})
 	}
 	return canvas, nil
+}
+
+func (o options) raysOpts() raysOptions {
+	return raysOptions{strength: o.raysStrength, angle: o.raysAngle, width: o.raysWidth}
 }
 
 func parseChrome(spec string, bgDark bool) (kind string, dark bool, err error) {

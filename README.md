@@ -34,14 +34,15 @@ shot in.png --bg ~/Pictures/wallpaper.jpg --pad 12%
 ```
 
 Defaults are tuned to look right without any flags: `shot in.png` gives you the
-`slate` gradient, 7% padding, a 12px radius and a soft shadow.
+`sunrise` mesh gradient, soft diagonal light rays, 7% padding, a 12px radius and
+a soft shadow.
 
 ### Flags
 
 | Flag | Default | Notes |
 |---|---|---|
 | `-o`, `--out` | `<input>-shot.png` | `~/Desktop/shot-<timestamp>.png` for captures |
-| `--bg` | `slate` | preset name, `#hex[,#hex...]` gradient, or an image path |
+| `--bg` | `sunrise` | preset name, `#hex[,#hex...]` gradient, or an image path |
 | `--bg-angle` | `135` | 0 = left→right, 90 = top→bottom |
 | `--pad` | `7%` | px or % of the window's long side |
 | `--radius` | `12px` | scaled up on retina captures |
@@ -49,9 +50,10 @@ Defaults are tuned to look right without any flags: `shot in.png` gives you the
 | `--shadow-opacity` | `0.32` | |
 | `--shadow-offset` | `1.1%` | vertical |
 | `--shadow-color` | `#0A0C14` | |
-| `--rays` | | soft window-blind light rays (postspark's "Shadow Overlay") |
+| `--no-rays` | | disable the light rays (on by default) |
 | `--rays-strength` | `0.04` | |
 | `--rays-angle` | `35` | |
+| `--rays-width` | `2.5` | >1 = fewer, wider bands |
 | `--rays-under` | | confine the rays to the backdrop, sparing the window |
 | `--chrome` | `none` | `mac`, `mac-dark`, `browser`, `browser-dark`, `auto` |
 | `--title` | | title bar text (mac chrome) |
