@@ -11,7 +11,15 @@ out to are `screencapture` (for `--capture`) and `osascript` (for `--copy`).
 ## Install
 
 ```sh
-go build -o shot . && cp shot ~/.local/bin/
+git clone https://github.com/kidandcat/shot && cd shot && ./install.sh
+```
+
+That builds the binary into `~/.local/bin` and symlinks the [Claude Code
+skill](skills/shot/SKILL.md) into `~/.claude/skills`, so Claude knows how to
+drive it. Pass `--no-skill` for the binary alone, or use Go directly:
+
+```sh
+go install github.com/kidandcat/shot@latest
 ```
 
 ## Usage
