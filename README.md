@@ -51,7 +51,7 @@ Defaults are tuned to look right without any flags: `shot in.png` gives you the
 | `--url` | | address bar text (browser chrome) |
 | `--ratio` | | e.g. `16:9` — pads the canvas out, never crops |
 | `--scale` | `1` | scale the input before compositing |
-| `--capture` | | `window`, `region` or `screen` |
+| `--capture` | | `window`, `region`, `screen`, or `rect:X,Y,W,H` (non-interactive) |
 | `--copy` | | also copy the result to the clipboard |
 | `--open` | | open the result when done |
 | `--list-bg` | | list background presets |

@@ -6,10 +6,30 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"strings"
 )
 
+// validateRect checks an X,Y,W,H rectangle before it reaches screencapture -R.
+func validateRect(rect string) error {
+	parts := strings.Split(rect, ",")
+	if len(parts) != 4 {
+		return fmt.Errorf("--capture rect: expected rect:X,Y,W,H, got %q", rect)
+	}
+	for i, p := range parts {
+		v, err := strconv.ParseFloat(strings.TrimSpace(p), 64)
+		if err != nil {
+			return fmt.Errorf("--capture rect: %q is not a number", p)
+		}
+		if i >= 2 && v <= 0 {
+			return fmt.Errorf("--capture rect: width and height must be > 0")
+		}
+	}
+	return nil
+}
+
 // capture grabs a screenshot into a temp PNG and returns its path.
-// mode is one of: window, region, screen.
+// mode is one of: window, region, screen, or rect:X,Y,W,H (non-interactive).
 func capture(mode string) (string, error) {
 	tmp, err := os.CreateTemp("", "shot-capture-*.png")
 	if err != nil {
@@ -30,8 +50,16 @@ func capture(mode string) (string, error) {
 		case "screen":
 			cmd = exec.Command("screencapture", "-m", "-x", path)
 		default:
-			os.Remove(path)
-			return "", fmt.Errorf("unknown capture mode %q (window|region|screen)", mode)
+			rect, ok := strings.CutPrefix(mode, "rect:")
+			if !ok {
+				os.Remove(path)
+				return "", fmt.Errorf("unknown capture mode %q (window|region|screen|rect:X,Y,W,H)", mode)
+			}
+			if err := validateRect(rect); err != nil {
+				os.Remove(path)
+				return "", err
+			}
+			cmd = exec.Command("screencapture", "-R"+rect, "-x", path)
 		}
 	case "linux":
 		cmd, err = linuxCapture(mode, path)
