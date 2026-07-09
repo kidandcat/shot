@@ -31,10 +31,15 @@ command -v go >/dev/null 2>&1 || {
 	exit 1
 }
 
-src="$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo .)"
+# When piped from curl, "$0" is the shell itself, not a path — never fall back to
+# the current directory, which might be any unrelated Go module.
+src=""
+if [ -f "$0" ]; then
+	src="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+fi
 
-# Piped from curl: there is no checkout next to the script, so fetch one.
-if [ ! -f "$src/go.mod" ]; then
+# No checkout next to the script, so fetch one.
+if [ -z "$src" ] || [ ! -f "$src/go.mod" ]; then
 	command -v git >/dev/null 2>&1 || {
 		echo "shot: git is required" >&2
 		exit 1
