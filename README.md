@@ -26,6 +26,9 @@ shot --capture window --bg midnight --chrome mac-dark --title "Marketplace" --co
 # Custom gradient, 16:9 canvas for a slide or a product update post
 shot in.png --bg "#0f2027,#203a43,#2c5364" --ratio 16:9 -o out.png
 
+# Diagonal blind shadows across the whole image
+shot in.png --bg slate --rays
+
 # Your own image as the backdrop
 shot in.png --bg ~/Pictures/wallpaper.jpg --pad 12%
 ```
@@ -46,6 +49,10 @@ Defaults are tuned to look right without any flags: `shot in.png` gives you the
 | `--shadow-opacity` | `0.32` | |
 | `--shadow-offset` | `1.1%` | vertical |
 | `--shadow-color` | `#0A0C14` | |
+| `--rays` | | soft window-blind light rays (postspark's "Shadow Overlay") |
+| `--rays-strength` | `0.18` | |
+| `--rays-angle` | `35` | |
+| `--rays-under` | | confine the rays to the backdrop, sparing the window |
 | `--chrome` | `none` | `mac`, `mac-dark`, `browser`, `browser-dark`, `auto` |
 | `--title` | | title bar text (mac chrome) |
 | `--url` | | address bar text (browser chrome) |

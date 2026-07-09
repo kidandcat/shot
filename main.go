@@ -27,6 +27,10 @@ type options struct {
 	shadowOpacity float64
 	shadowOffset  string
 	shadowColor   string
+	rays          bool
+	raysStrength  float64
+	raysAngle     float64
+	raysUnder     bool
 	chrome        string
 	title         string
 	url           string
@@ -65,6 +69,10 @@ flags:
       --shadow-opacity F
       --shadow-offset V
       --shadow-color   #hex
+      --rays           cast soft window-blind light rays across the image
+      --rays-strength F  default 0.18
+      --rays-angle DEG   default 35
+      --rays-under     confine the rays to the backdrop, sparing the window
       --chrome KIND    none | mac | mac-dark | browser | browser-dark (default: none)
       --title TEXT     title bar text (mac chrome)
       --url TEXT       address bar text (browser chrome)
@@ -102,6 +110,10 @@ func run() error {
 	fs.Float64Var(&o.shadowOpacity, "shadow-opacity", 0.32, "")
 	str(&o.shadowOffset, "1.1%", "shadow-offset")
 	str(&o.shadowColor, "#0A0C14", "shadow-color")
+	fs.BoolVar(&o.rays, "rays", false, "")
+	fs.Float64Var(&o.raysStrength, "rays-strength", 0.18, "")
+	fs.Float64Var(&o.raysAngle, "rays-angle", 35, "")
+	fs.BoolVar(&o.raysUnder, "rays-under", false, "")
 	str(&o.chrome, "none", "chrome")
 	str(&o.title, "", "title")
 	str(&o.url, "", "url")
@@ -254,12 +266,23 @@ func compose(src image.Image, o options, angleSet bool) (image.Image, error) {
 	canvas := bgFn(image.Rect(0, 0, canvasW, canvasH))
 	origin := image.Pt((canvasW-wb.Dx())/2, (canvasH-wb.Dy())/2)
 
+	// Underlay rays light the backdrop only; the window is composited on top of
+	// them, so there is no point shading the pixels it will cover.
+	if o.rays && o.raysUnder {
+		mask := roundedMask(wb.Dx(), wb.Dy(), radius)
+		applyRays(canvas, raysOptions{strength: o.raysStrength, angle: o.raysAngle}, mask, origin)
+	}
+
 	if sigma > 0 && o.shadowOpacity > 0 {
 		sh, shOff := dropShadow(wb.Dx(), wb.Dy(), radius, sigma, offset, o.shadowOpacity, shColor)
 		at := origin.Add(shOff)
 		draw.Draw(canvas, sh.Bounds().Add(at), sh, sh.Bounds().Min, draw.Over)
 	}
 	draw.Draw(canvas, rounded.Bounds().Add(origin), rounded, rounded.Bounds().Min, draw.Over)
+
+	if o.rays && !o.raysUnder {
+		applyRays(canvas, raysOptions{strength: o.raysStrength, angle: o.raysAngle}, nil, image.Point{})
+	}
 	return canvas, nil
 }
 
