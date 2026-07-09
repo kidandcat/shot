@@ -90,7 +90,7 @@ flags:
       --capture MODE   window | region | screen | rect:X,Y,W,H
       --width N        page viewport width (default: 1440)
       --height N       page viewport height (default: 900)
-      --dsf F          device pixel ratio for page renders (default: 2)
+      --dsf F          device pixel ratio for page renders (default: 3; try 4 for print)
       --full-page      capture the whole page, not just the viewport
       --wait MS        settle time before the page render (default: 1200)
       --dark           render the page with prefers-color-scheme: dark
@@ -139,12 +139,12 @@ func run() error {
 	str(&o.captureMode, "", "capture")
 	fs.IntVar(&o.width, "width", 1440, "")
 	fs.IntVar(&o.height, "height", 900, "")
-	fs.Float64Var(&o.dsf, "dsf", 2, "")
+	fs.Float64Var(&o.dsf, "dsf", 3, "")
 	fs.BoolVar(&o.fullPage, "full-page", false, "")
 	fs.IntVar(&o.waitMs, "wait", 1200, "")
 	fs.BoolVar(&o.dark, "dark", false, "")
 	str(&o.out, "", "out", "o")
-	fs.IntVar(&o.quality, "quality", 92, "")
+	fs.IntVar(&o.quality, "quality", 95, "")
 	fs.BoolVar(&o.copyClip, "copy", false, "")
 	fs.BoolVar(&o.open, "open", false, "")
 	fs.BoolVar(&o.listBG, "list-bg", false, "")

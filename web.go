@@ -61,7 +61,7 @@ func captureURL(url string, o webOptions) (string, error) {
 		return "", fmt.Errorf("--width and --height must be > 0")
 	}
 	if o.scale <= 0 {
-		o.scale = 2
+		o.scale = 3
 	}
 
 	ctx, cancel := chromedp.NewContext(context.Background())

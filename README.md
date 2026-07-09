@@ -74,7 +74,7 @@ a soft shadow.
 | `--scale` | `1` | scale the input before compositing |
 | `--capture` | | `window`, `region`, `screen`, or `rect:X,Y,W,H` (non-interactive) |
 | `--width` / `--height` | `1440` / `900` | page viewport for URL renders |
-| `--dsf` | `2` | device pixel ratio for URL renders |
+| `--dsf` | `3` | device pixel ratio for URL renders; `4` for print |
 | `--full-page` | | capture the whole page, not just the viewport |
 | `--wait` | `1200` | ms to let the page settle before rendering |
 | `--dark` | | render the page with `prefers-color-scheme: dark` |

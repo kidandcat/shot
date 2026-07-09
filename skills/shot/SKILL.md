@@ -34,7 +34,7 @@ shot https://fecha.app --chrome none          # bare page, no drawn frame
 shot https://fecha.app --wait 3000            # let a heavy page settle longer
 ```
 
-`--chrome browser` and `--url <the url>` are implied for URLs; override them if you want a different address bar text, or `--chrome none` for no frame. `--dsf 2` (default) renders at retina density. Needs Chrome or Chromium installed; a bad URL fails with the network error, it does not produce a blank image.
+`--chrome browser` and `--url <the url>` are implied for URLs; override them if you want a different address bar text, or `--chrome none` for no frame. `--dsf 3` (default) renders well above retina density, so the image survives being downscaled by Slack, X or a blog. `--dsf 4` goes further at a real cost in time and file size. Needs Chrome or Chromium installed; a bad URL fails with the network error, it does not produce a blank image.
 
 ## Flags worth knowing
 
