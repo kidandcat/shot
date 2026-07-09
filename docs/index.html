@@ -26,13 +26,14 @@
     margin: 0;
     font: 17px/1.65 ui-sans-serif, -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
     color: var(--ink);
-    background: #fde8c8;
+    /* An echo of the sunrise preset, heavily desaturated: the hero image uses
+       the real thing, and it has to be the loudest colour on the page. */
+    background: #fbf7f4;
     background-image:
-      radial-gradient(90rem 60rem at 8% 12%, #fde68a 0%, transparent 60%),
-      radial-gradient(80rem 60rem at 95% 6%, #fb7185 0%, transparent 55%),
-      radial-gradient(70rem 60rem at 3% 92%, #fdba74 0%, transparent 55%),
-      radial-gradient(80rem 70rem at 98% 96%, #c026d3 0%, transparent 55%),
-      radial-gradient(90rem 70rem at 50% 50%, #fb923c 0%, transparent 60%);
+      radial-gradient(90rem 60rem at 8% 10%, rgba(253,230,138,.42) 0%, transparent 60%),
+      radial-gradient(80rem 60rem at 96% 4%, rgba(251,113,133,.28) 0%, transparent 55%),
+      radial-gradient(70rem 60rem at 2% 94%, rgba(253,186,116,.30) 0%, transparent 55%),
+      radial-gradient(80rem 70rem at 99% 97%, rgba(192,38,211,.20) 0%, transparent 55%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
