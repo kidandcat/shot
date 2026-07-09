@@ -38,21 +38,21 @@
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
-  header { padding: 72px 0 8px; text-align: center; }
+  header { padding: 44px 0 0; text-align: center; }
   .logo {
     display: inline-flex; align-items: center; gap: 10px;
     font-weight: 700; font-size: 15px; letter-spacing: .14em; text-transform: uppercase;
     color: var(--muted);
   }
   h1 {
-    font-size: clamp(2.6rem, 6vw, 4.2rem);
-    line-height: 1.05; letter-spacing: -.03em; margin: 18px 0 0; font-weight: 780;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.05; letter-spacing: -.03em; margin: 14px 0 0; font-weight: 780;
   }
   .tagline {
-    font-size: clamp(1.05rem, 2.2vw, 1.35rem); color: #4a3d50;
-    max-width: 40ch; margin: 18px auto 0;
+    font-size: clamp(1rem, 2vw, 1.2rem); color: #4a3d50;
+    max-width: 52ch; margin: 14px auto 0;
   }
-  .cta { margin: 30px 0 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .cta { margin: 22px 0 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn {
     display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 600;
     text-decoration: none; font-size: 15px; border: 1px solid transparent;
@@ -62,13 +62,16 @@
   .btn-ghost { background: rgba(255,255,255,.6); color: var(--ink); border-color: var(--border); }
   .btn-ghost:hover { background: rgba(255,255,255,.85); }
 
-  .hero { margin: 52px 0 0; }
+  .hero { margin: 26px auto 0; max-width: 720px; }
   .hero img {
-    width: 100%; height: auto; display: block; border-radius: 14px;
-    box-shadow: 0 40px 90px -30px rgba(30,12,40,.55), 0 4px 14px rgba(30,12,40,.14);
+    width: 100%; height: auto; display: block; border-radius: 12px;
+    box-shadow: 0 30px 70px -28px rgba(30,12,40,.5), 0 3px 12px rgba(30,12,40,.12);
   }
-  .hero figcaption { text-align: center; color: #5b4d61; font-size: 14px; margin-top: 14px; }
+  .hero figcaption { text-align: center; color: #5b4d61; font-size: 13.5px; margin-top: 12px; }
   .hero code { background: rgba(255,255,255,.55); padding: 2px 7px; border-radius: 6px; }
+
+  /* The install command has to be visible on load, above the fold. */
+  .install-hero { max-width: 760px; margin: 26px auto 0; text-align: left; padding: 18px; }
 
   section { margin: 84px 0; }
   h2 { font-size: 1.7rem; letter-spacing: -.02em; margin: 0 0 8px; }
@@ -128,28 +131,25 @@
     <div class="logo">📸 shot</div>
     <h1>Screenshots worth shipping.</h1>
     <p class="tagline">One command turns a plain capture — or a live website — into something you can drop in a product update without apologising.</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="#install">Install</a>
-      <a class="btn btn-ghost" href="https://github.com/kidandcat/shot">GitHub</a>
-    </div>
-  </header>
 
-  <figure class="hero">
-    <img src="hero.png" alt="A screenshot of fecha.app framed by shot: mesh gradient backdrop, drawn browser window, soft light rays and a drop shadow." width="1800" height="1262">
-    <figcaption>This image is the literal output of <code>shot https://fecha.app</code>. No editor, no upload.</figcaption>
-  </figure>
-
-  <section id="install">
-    <h2>Install</h2>
-    <p class="lede">Needs Go, and Chrome only if you render websites. Builds a single static binary into <code>~/.local/bin</code>.</p>
-    <div class="card">
+    <div class="card install-hero" id="install">
       <div class="copy-row">
         <pre class="one"><code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/kidandcat/shot/main/install.sh | sh</code></pre>
         <button class="copy" data-target="cmd-install">Copy</button>
       </div>
-      <p class="hint">Also installs a <strong>Claude Code skill</strong>, so your agent knows how to drive it. Skip it with <code>--no-skill</code>, or use <code>go install github.com/kidandcat/shot@latest</code>.</p>
+      <p class="hint">Installs the binary and a <strong>Claude Code skill</strong>, so your agent knows how to drive it. <a href="#agent">Hand it to your agent instead →</a></p>
     </div>
-  </section>
+
+    <div class="cta">
+      <a class="btn btn-ghost" href="https://github.com/kidandcat/shot">GitHub</a>
+      <a class="btn btn-ghost" href="#usage">Usage</a>
+    </div>
+  </header>
+
+  <figure class="hero">
+    <img src="hero.png" alt="The shot GitHub repository page, framed by shot: mesh gradient backdrop, drawn browser window, soft light rays and a drop shadow." width="1400" height="982">
+    <figcaption>The literal output of <code>shot https://github.com/kidandcat/shot</code>. No editor, no upload.</figcaption>
+  </figure>
 
   <section id="agent">
     <h2>Or just hand this to your AI agent</h2>
@@ -164,14 +164,14 @@
 
   <section>
     <h2>Before and after</h2>
-    <p class="lede">Same page, same second. The left is what your screenshot tool gives you. The right is <code>shot</code> with no flags at all.</p>
+    <p class="lede">Same page, same second. The left is what your browser gives you. The right is <code>shot</code> with no flags at all.</p>
     <div class="compare">
       <figure>
-        <img src="before.png" alt="A bare, unstyled screenshot of a web page: flat, edge to edge, no framing." width="900" height="563" loading="lazy">
+        <img src="before.png" alt="A bare, unstyled screenshot of the GitHub repository page: flat, edge to edge, no framing." width="900" height="563" loading="lazy">
         <figcaption>Before</figcaption>
       </figure>
       <figure>
-        <img src="after.png" alt="The same page after shot: mesh gradient backdrop, browser frame, rounded corners, drop shadow, light rays." width="900" height="631" loading="lazy">
+        <img src="after.png" alt="The same GitHub page after shot: mesh gradient backdrop, browser frame, rounded corners, drop shadow, light rays." width="900" height="631" loading="lazy">
         <figcaption>After · <code>shot &lt;url&gt;</code></figcaption>
       </figure>
     </div>
@@ -207,19 +207,19 @@
     </div>
   </section>
 
-  <section>
+  <section id="usage">
     <h2>Usage</h2>
     <pre class="block"><code><span class="c"># A screenshot you already have</span>
 shot ugly.png --copy
 
 <span class="c"># A live page, framed, straight to the clipboard</span>
-shot https://fecha.app --copy
+shot https://github.com/kidandcat/shot --copy
 
 <span class="c"># The whole page, in dark mode</span>
-shot https://fecha.app --full-page --dark
+shot https://news.ycombinator.com --full-page --dark
 
 <span class="c"># A phone viewport</span>
-shot https://fecha.app --width 390 --height 844
+shot https://go.dev --width 390 --height 844
 
 <span class="c"># Capture a window and frame it</span>
 shot --capture window --bg midnight --chrome mac-dark --title "Marketplace"
