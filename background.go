@@ -113,6 +113,10 @@ func resolveBackground(spec string, angle float64, angleSet bool) (func(image.Re
 		return func(r image.Rectangle) *image.RGBA { return renderGradient(r, p.stops, a) }, p.isDark, nil
 	}
 
+	if p, ok := findMesh(spec); ok {
+		return func(r image.Rectangle) *image.RGBA { return renderMesh(r, p) }, p.isDark, nil
+	}
+
 	if strings.HasPrefix(spec, "#") || isHexList(spec) {
 		parts := strings.Split(spec, ",")
 		stops := make([]color.RGBA, 0, len(parts))
@@ -137,8 +141,8 @@ func resolveBackground(spec string, angle float64, angleSet bool) (func(image.Re
 		return func(r image.Rectangle) *image.RGBA { return coverImage(src, r) }, averageLuma(src) < 0.55, nil
 	}
 
-	return nil, false, fmt.Errorf("unknown background %q (not a preset, hex colour or file)\npresets: %s",
-		spec, strings.Join(presetNames(), ", "))
+	return nil, false, fmt.Errorf("unknown background %q (not a preset, hex colour or file)\ngradients: %s\nmesh: %s",
+		spec, strings.Join(presetNames(), ", "), strings.Join(meshNames(), ", "))
 }
 
 func isHexList(s string) bool {

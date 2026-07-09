@@ -135,7 +135,8 @@ func run() error {
 		return nil
 	}
 	if o.listBG {
-		fmt.Println(strings.Join(presetNames(), "\n"))
+		fmt.Println("gradients:", strings.Join(presetNames(), ", "))
+		fmt.Println("mesh:     ", strings.Join(meshNames(), ", "))
 		return nil
 	}
 

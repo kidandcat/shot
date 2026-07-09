@@ -65,7 +65,10 @@ Defaults are tuned to look right without any flags: `shot in.png` gives you the
 
 Flags may appear before or after the input file.
 
-Presets: `aurora`, `candy`, `dawn`, `flare`, `forest`, `grape`, `graphite`,
+Mesh presets (multi-colour blobs, richer than a two-stop sweep): `nebula`,
+`sunrise`, `lagoon`, `iris`, `ember`, `meadow`.
+
+Linear gradient presets: `aurora`, `candy`, `dawn`, `flare`, `forest`, `grape`, `graphite`,
 `ink`, `midnight`, `mint`, `ocean`, `peach`, `rose`, `sky`, `slate`, `sunset`.
 
 `--chrome auto` picks the light or dark title bar based on how dark the
