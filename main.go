@@ -71,7 +71,7 @@ flags:
       --shadow-offset V
       --shadow-color   #hex
       --no-rays        disable the window-blind light rays (on by default)
-      --rays-strength F  default 0.04
+      --rays-strength F  default 0.07
       --rays-angle DEG   default 35
       --rays-width F     >1 = fewer, wider bands (default: 2.5)
       --rays-under     confine the rays to the backdrop, sparing the window
@@ -113,7 +113,7 @@ func run() error {
 	str(&o.shadowOffset, "1.1%", "shadow-offset")
 	str(&o.shadowColor, "#0A0C14", "shadow-color")
 	fs.BoolVar(&o.noRays, "no-rays", false, "")
-	fs.Float64Var(&o.raysStrength, "rays-strength", 0.04, "")
+	fs.Float64Var(&o.raysStrength, "rays-strength", 0.07, "")
 	fs.Float64Var(&o.raysAngle, "rays-angle", 35, "")
 	fs.Float64Var(&o.raysWidth, "rays-width", 2.5, "")
 	fs.BoolVar(&o.raysUnder, "rays-under", false, "")

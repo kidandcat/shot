@@ -51,7 +51,7 @@ a soft shadow.
 | `--shadow-offset` | `1.1%` | vertical |
 | `--shadow-color` | `#0A0C14` | |
 | `--no-rays` | | disable the light rays (on by default) |
-| `--rays-strength` | `0.04` | |
+| `--rays-strength` | `0.07` | |
 | `--rays-angle` | `35` | |
 | `--rays-width` | `2.5` | >1 = fewer, wider bands |
 | `--rays-under` | | confine the rays to the backdrop, sparing the window |
