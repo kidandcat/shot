@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>shot — screenshots worth shipping</title>
+<meta name="description" content="A local CLI that turns a plain screenshot, or a live website, into a presentable image: mesh gradient backdrop, soft light rays, rounded corners, drop shadow, window frame.">
+<meta property="og:title" content="shot — screenshots worth shipping">
+<meta property="og:description" content="Turn a plain screenshot, or a live website, into a presentable image. One binary, no browser, no upload.">
+<meta property="og:image" content="https://kidandcat.github.io/shot/hero.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+<style>
+  :root {
+    --ink: #1b1420;
+    --muted: #6b5f70;
+    --card: rgba(255,255,255,.72);
+    --border: rgba(27,20,32,.10);
+    --code-bg: #1e1a24;
+    --code-ink: #efe9f2;
+    --accent: #c0387a;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font: 17px/1.65 ui-sans-serif, -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--ink);
+    background: #fde8c8;
+    background-image:
+      radial-gradient(90rem 60rem at 8% 12%, #fde68a 0%, transparent 60%),
+      radial-gradient(80rem 60rem at 95% 6%, #fb7185 0%, transparent 55%),
+      radial-gradient(70rem 60rem at 3% 92%, #fdba74 0%, transparent 55%),
+      radial-gradient(80rem 70rem at 98% 96%, #c026d3 0%, transparent 55%),
+      radial-gradient(90rem 70rem at 50% 50%, #fb923c 0%, transparent 60%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  header { padding: 72px 0 8px; text-align: center; }
+  .logo {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 15px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 1.05; letter-spacing: -.03em; margin: 18px 0 0; font-weight: 780;
+  }
+  .tagline {
+    font-size: clamp(1.05rem, 2.2vw, 1.35rem); color: #4a3d50;
+    max-width: 40ch; margin: 18px auto 0;
+  }
+  .cta { margin: 30px 0 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 600;
+    text-decoration: none; font-size: 15px; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover { background: #33253a; }
+  .btn-ghost { background: rgba(255,255,255,.6); color: var(--ink); border-color: var(--border); }
+  .btn-ghost:hover { background: rgba(255,255,255,.85); }
+
+  .hero { margin: 52px 0 0; }
+  .hero img {
+    width: 100%; height: auto; display: block; border-radius: 14px;
+    box-shadow: 0 40px 90px -30px rgba(30,12,40,.55), 0 4px 14px rgba(30,12,40,.14);
+  }
+  .hero figcaption { text-align: center; color: #5b4d61; font-size: 14px; margin-top: 14px; }
+  .hero code { background: rgba(255,255,255,.55); padding: 2px 7px; border-radius: 6px; }
+
+  section { margin: 84px 0; }
+  h2 { font-size: 1.7rem; letter-spacing: -.02em; margin: 0 0 8px; }
+  .lede { color: #4a3d50; margin: 0 0 26px; max-width: 62ch; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 26px; backdrop-filter: blur(14px);
+  }
+  .copy-row { display: flex; gap: 10px; align-items: stretch; }
+  pre.one {
+    flex: 1; margin: 0; overflow-x: auto; background: var(--code-bg); color: var(--code-ink);
+    padding: 16px 18px; border-radius: 11px; font-size: 14.5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  pre.one code { white-space: pre; }
+  .copy {
+    border: 0; border-radius: 11px; padding: 0 18px; cursor: pointer; font-weight: 600;
+    background: var(--ink); color: #fff; font-size: 14px; white-space: nowrap;
+  }
+  .copy:hover { background: #33253a; }
+  .copy.done { background: #1f7a52; }
+  .hint { color: var(--muted); font-size: 14px; margin: 14px 0 0; }
+  .hint code { background: rgba(27,20,32,.06); padding: 1px 6px; border-radius: 5px; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .compare figure { margin: 0; }
+  .compare img { width: 100%; height: auto; border-radius: 10px; display: block; border: 1px solid var(--border); }
+  .compare figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .feat h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .feat p { margin: 0; color: #4a3d50; font-size: 15px; }
+
+  pre.block {
+    background: var(--code-bg); color: var(--code-ink); padding: 20px 22px; border-radius: 12px;
+    overflow-x: auto; font-size: 14.5px; line-height: 1.7;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  pre.block .c { color: #9d8fa8; }
+
+  footer { padding: 40px 0 64px; text-align: center; color: #5b4d61; font-size: 14px; }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .compare { grid-template-columns: 1fr; }
+    .copy-row { flex-direction: column; }
+    .copy { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="logo">📸 shot</div>
+    <h1>Screenshots worth shipping.</h1>
+    <p class="tagline">One command turns a plain capture — or a live website — into something you can drop in a product update without apologising.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#install">Install</a>
+      <a class="btn btn-ghost" href="https://github.com/kidandcat/shot">GitHub</a>
+    </div>
+  </header>
+
+  <figure class="hero">
+    <img src="hero.png" alt="A screenshot of fecha.app framed by shot: mesh gradient backdrop, drawn browser window, soft light rays and a drop shadow." width="1800" height="1262">
+    <figcaption>This image is the literal output of <code>shot https://fecha.app</code>. No editor, no upload.</figcaption>
+  </figure>
+
+  <section id="install">
+    <h2>Install</h2>
+    <p class="lede">Needs Go, and Chrome only if you render websites. Builds a single static binary into <code>~/.local/bin</code>.</p>
+    <div class="card">
+      <div class="copy-row">
+        <pre class="one"><code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/kidandcat/shot/main/install.sh | sh</code></pre>
+        <button class="copy" data-target="cmd-install">Copy</button>
+      </div>
+      <p class="hint">Also installs a <strong>Claude Code skill</strong>, so your agent knows how to drive it. Skip it with <code>--no-skill</code>, or use <code>go install github.com/kidandcat/shot@latest</code>.</p>
+    </div>
+  </section>
+
+  <section id="agent">
+    <h2>Or just hand this to your AI agent</h2>
+    <p class="lede">Paste this into Claude Code, Cursor, or whatever is sitting in your terminal. It installs the tool and the skill that teaches it the flags, the defaults and the sharp edges.</p>
+    <div class="card">
+      <div class="copy-row">
+        <pre class="one"><code id="cmd-agent">Install shot (github.com/kidandcat/shot) by running: curl -fsSL https://raw.githubusercontent.com/kidandcat/shot/main/install.sh | sh — then use it whenever I ask you to make a screenshot look good or to screenshot a website.</code></pre>
+        <button class="copy" data-target="cmd-agent">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Before and after</h2>
+    <p class="lede">Same page, same second. The left is what your screenshot tool gives you. The right is <code>shot</code> with no flags at all.</p>
+    <div class="compare">
+      <figure>
+        <img src="before.png" alt="A bare, unstyled screenshot of a web page: flat, edge to edge, no framing." width="900" height="563" loading="lazy">
+        <figcaption>Before</figcaption>
+      </figure>
+      <figure>
+        <img src="after.png" alt="The same page after shot: mesh gradient backdrop, browser frame, rounded corners, drop shadow, light rays." width="900" height="631" loading="lazy">
+        <figcaption>After · <code>shot &lt;url&gt;</code></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>What it does</h2>
+    <div class="grid">
+      <div class="card feat">
+        <h3>Websites, headless</h3>
+        <p>Pass a URL and it renders in a headless Chrome. No tabs, no bookmarks, no extensions — the address bar in the image is drawn, so it looks the same on every machine.</p>
+      </div>
+      <div class="card feat">
+        <h3>Backdrops that aren't flat</h3>
+        <p>Six mesh gradients that blend several colour blobs, plus sixteen linear ones. Or your own hex colours, or an image.</p>
+      </div>
+      <div class="card feat">
+        <h3>Light rays</h3>
+        <p>The soft diagonal shadow a window blind casts. Screened for the light, multiplied for the shade, so it never blows out a white UI.</p>
+      </div>
+      <div class="card feat">
+        <h3>Window frames</h3>
+        <p>A macOS title bar or a browser chrome, drawn to scale — including on retina captures, where a fixed-height bar reads as a hairline.</p>
+      </div>
+      <div class="card feat">
+        <h3>Capture too</h3>
+        <p>Grab a window, a region, or an explicit rectangle, and frame it in the same command. Straight to the clipboard with <code>--copy</code>.</p>
+      </div>
+      <div class="card feat">
+        <h3>Sharp by default</h3>
+        <p>Pages render at 3× device pixel ratio, so the image still looks right after Slack, X or your blog have finished downscaling it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <pre class="block"><code><span class="c"># A screenshot you already have</span>
+shot ugly.png --copy
+
+<span class="c"># A live page, framed, straight to the clipboard</span>
+shot https://fecha.app --copy
+
+<span class="c"># The whole page, in dark mode</span>
+shot https://fecha.app --full-page --dark
+
+<span class="c"># A phone viewport</span>
+shot https://fecha.app --width 390 --height 844
+
+<span class="c"># Capture a window and frame it</span>
+shot --capture window --bg midnight --chrome mac-dark --title "Marketplace"
+
+<span class="c"># Your own colours, sized for a slide</span>
+shot in.png --bg "#0f2027,#2c5364" --ratio 16:9 -o out.png</code></pre>
+    <p class="hint">Defaults are already tuned: <code>sunrise</code> mesh gradient, light rays, 7% padding, rounded corners, soft shadow. <code>shot --list-bg</code> shows every backdrop.</p>
+  </section>
+
+  <footer>
+    <p><a href="https://github.com/kidandcat/shot">github.com/kidandcat/shot</a> · MIT · built because every alternative was a web app.</p>
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = document.getElementById(btn.dataset.target).textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        var old = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('done');
+        setTimeout(function () { btn.textContent = old; btn.classList.remove('done'); }, 1600);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

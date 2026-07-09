@@ -31,7 +31,20 @@ command -v go >/dev/null 2>&1 || {
 	exit 1
 }
 
-src="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+src="$(CDPATH='' cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || echo .)"
+
+# Piped from curl: there is no checkout next to the script, so fetch one.
+if [ ! -f "$src/go.mod" ]; then
+	command -v git >/dev/null 2>&1 || {
+		echo "shot: git is required" >&2
+		exit 1
+	}
+	src="$(mktemp -d)"
+	EPHEMERAL=1
+	trap 'rm -rf "$src"' EXIT INT TERM
+	echo "fetching shot..."
+	git clone --depth 1 -q https://github.com/kidandcat/shot.git "$src"
+fi
 
 echo "building..."
 (cd "$src" && go build -o shot .)
@@ -46,11 +59,17 @@ case ":$PATH:" in
 esac
 
 if [ "$INSTALL_SKILL" -eq 1 ]; then
-	# Symlink rather than copy, so `git pull` keeps the skill current.
 	mkdir -p "$SKILL_DIR"
 	rm -rf "$SKILL_DIR/shot"
-	ln -s "$src/skills/shot" "$SKILL_DIR/shot"
-	echo "installed skill  $SKILL_DIR/shot -> $src/skills/shot"
+	if [ "${EPHEMERAL:-0}" -eq 1 ]; then
+		# The checkout is a temp dir we are about to delete; a symlink would dangle.
+		cp -R "$src/skills/shot" "$SKILL_DIR/shot"
+		echo "installed skill  $SKILL_DIR/shot"
+	else
+		# Symlink from a real checkout, so `git pull` keeps the skill current.
+		ln -s "$src/skills/shot" "$SKILL_DIR/shot"
+		echo "installed skill  $SKILL_DIR/shot -> $src/skills/shot"
+	fi
 fi
 
 echo
