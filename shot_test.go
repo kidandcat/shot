@@ -4,6 +4,7 @@ import (
 	"flag"
 	"image"
 	"image/color"
+	"image/draw"
 	"reflect"
 	"testing"
 )
@@ -205,6 +206,35 @@ func TestPresetsAreValid(t *testing.T) {
 		}
 		if _, ok := findPreset(p.name); !ok {
 			t.Errorf("preset %q not findable", p.name)
+		}
+	}
+}
+
+func TestComposeTransparent(t *testing.T) {
+	src := image.NewRGBA(image.Rect(0, 0, 400, 300))
+	draw.Draw(src, src.Bounds(), image.NewUniform(color.White), image.Point{}, draw.Src)
+	o := options{bg: "transparent", pad: "10%", shadow: "4%", chrome: "none", scale: 1, shadowOpacity: 0.3, shadowOffset: "0", shadowColor: "#000", raysStrength: 0.5, raysAngle: 35, raysWidth: 2.5}
+
+	out, err := compose(src, o, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	canvas := out.(*image.RGBA)
+	b := canvas.Bounds()
+
+	if a := canvas.RGBAAt(0, 0).A; a != 0 {
+		t.Errorf("corner alpha = %d, want 0", a)
+	}
+	if c := canvas.RGBAAt(b.Dx()/2, b.Dy()/2); c != (color.RGBA{255, 255, 255, 255}) {
+		t.Errorf("window centre = %v, want untouched opaque white", c)
+	}
+	if a := canvas.RGBAAt(b.Dx()/2, 36).A; a == 0 || a == 255 {
+		t.Errorf("shadow alpha just above the window = %d, want partial", a)
+	}
+	for i := 0; i < len(canvas.Pix); i += 4 {
+		p := canvas.Pix[i : i+4]
+		if p[0] > p[3] || p[1] > p[3] || p[2] > p[3] {
+			t.Fatalf("pixel %v is not valid premultiplied alpha", p)
 		}
 	}
 }

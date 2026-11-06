@@ -49,6 +49,9 @@ shot in.png --bg "#0f2027,#203a43,#2c5364" --ratio 16:9 -o out.png
 # Diagonal blind shadows across the whole image
 shot in.png --bg slate --rays
 
+# No backdrop: only the window and its shadow, on a clear PNG
+shot in.png --bg transparent
+
 # Your own image as the backdrop
 shot in.png --bg ~/Pictures/wallpaper.jpg --pad 12%
 ```
@@ -62,7 +65,7 @@ a soft shadow.
 | Flag | Default | Notes |
 |---|---|---|
 | `-o`, `--out` | `<input>-shot.png` | `~/Desktop/shot-<timestamp>.png` for captures |
-| `--bg` | `sunrise` | preset name, `#hex[,#hex...]` gradient, or an image path |
+| `--bg` | `sunrise` | preset name, `#hex[,#hex...]` gradient, image path, or `transparent` |
 | `--bg-angle` | `135` | 0 = left→right, 90 = top→bottom |
 | `--pad` | `7%` | px or % of the window's long side |
 | `--radius` | `12px` | scaled up on retina captures |
