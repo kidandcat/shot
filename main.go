@@ -69,7 +69,7 @@ usage:
 
 flags:
   -o, --out PATH       output file (default: <input>-shot.png, or ~/Desktop for captures)
-      --bg SPEC        preset name, #hex[,#hex...] gradient, or an image path (default: sunrise)
+      --bg SPEC        preset name, #hex[,#hex...] gradient, image path, or transparent (default: sunrise)
       --bg-angle DEG   gradient angle, 0 = left→right, 90 = top→bottom
       --pad V          padding around the window, px or % of the long side (default: 7%)
       --radius V       window corner radius, px or % (default: 12px, scaled for retina)
@@ -316,9 +316,12 @@ func compose(src image.Image, o options, angleSet bool) (image.Image, error) {
 	canvas := bgFn(image.Rect(0, 0, canvasW, canvasH))
 	origin := image.Pt((canvasW-wb.Dx())/2, (canvasH-wb.Dy())/2)
 
+	// Rays shade the backdrop, and a clear canvas has none to shade.
+	rays := !o.noRays && o.bg != transparentBG
+
 	// Underlay rays light the backdrop only; the window is composited on top of
 	// them, so there is no point shading the pixels it will cover.
-	if !o.noRays && o.raysUnder {
+	if rays && o.raysUnder {
 		mask := roundedMask(wb.Dx(), wb.Dy(), radius)
 		applyRays(canvas, o.raysOpts(), mask, origin)
 	}
@@ -330,7 +333,7 @@ func compose(src image.Image, o options, angleSet bool) (image.Image, error) {
 	}
 	draw.Draw(canvas, rounded.Bounds().Add(origin), rounded, rounded.Bounds().Min, draw.Over)
 
-	if !o.noRays && !o.raysUnder {
+	if rays && !o.raysUnder {
 		applyRays(canvas, o.raysOpts(), nil, image.Point{})
 	}
 	return canvas, nil

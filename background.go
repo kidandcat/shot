@@ -104,7 +104,12 @@ func hexes(list ...string) []color.RGBA {
 
 // resolveBackground turns a --bg value into a renderer. The value is a preset
 // name, a comma-separated list of hex colours (one = solid), or a path to an image.
+// The value "transparent" leaves the canvas clear.
 func resolveBackground(spec string, angle float64, angleSet bool) (func(image.Rectangle) *image.RGBA, bool, error) {
+	if spec == transparentBG {
+		return image.NewRGBA, false, nil
+	}
+
 	if p, ok := findPreset(spec); ok {
 		a := p.angle
 		if angleSet {
@@ -144,6 +149,9 @@ func resolveBackground(spec string, angle float64, angleSet bool) (func(image.Re
 	return nil, false, fmt.Errorf("unknown background %q (not a preset, hex colour or file)\ngradients: %s\nmesh: %s",
 		spec, strings.Join(presetNames(), ", "), strings.Join(meshNames(), ", "))
 }
+
+// transparentBG is the --bg value for a clear canvas.
+const transparentBG = "transparent"
 
 func isHexList(s string) bool {
 	for _, p := range strings.Split(s, ",") {

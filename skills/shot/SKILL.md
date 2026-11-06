@@ -41,6 +41,7 @@ shot https://fecha.app --wait 3000            # let a heavy page settle longer
 | Want | Flag |
 |---|---|
 | A different backdrop | `--bg <preset\|#hex[,#hex...]\|image.jpg>` (`--list-bg` to see presets) |
+| No backdrop, for placing on any page | `--bg transparent` (PNG only; JPEG flattens to white; no light rays) |
 | No light rays | `--no-rays` |
 | Stronger / weaker rays | `--rays-strength 0.12` (default `0.07`) |
 | Wider / narrower ray bands | `--rays-width 4` (default `2.5`) |
